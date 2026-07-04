@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+.venv/
+venv/
+env/
+.venv.*/
+
+# pip
+Pipfile.lock
+.pip/
+
+# IDE / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Credentials & secrets — never commit these
+.env
+.env.*
+*.pem
+*.key
+*.cert
+*.crt
+id_rsa*
+**/secrets/
+**/credentials/
+**/config.toml
+*.token
+*.secret
+*.auth
+**/service-account*.json
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Project specific
+*.tcss
+tags
