@@ -129,7 +129,7 @@ Category = dict[str, str | list[Command]]
 
 CHEAT_DATA: list[Category] = [
     {
-        "name": "🟢  Movement",
+        "name": "Movement",
         "commands": [
             ("h", "Move cursor left", "basic"),
             ("j", "Move cursor down", "basic"),
@@ -166,7 +166,7 @@ CHEAT_DATA: list[Category] = [
         ],
     },
     {
-        "name": "✏️  Editing",
+        "name": "Editing",
         "commands": [
             ("i", "Insert mode — insert before cursor", "basic"),
             ("I", "Insert mode — insert at beginning of line", "basic"),
@@ -213,7 +213,7 @@ CHEAT_DATA: list[Category] = [
         ],
     },
     {
-        "name": "🔍  Search & Replace",
+        "name": "Search & Replace",
         "commands": [
             ("/pattern", "Search forward for pattern", "basic"),
             ("?pattern", "Search backward for pattern", "basic"),
@@ -234,7 +234,7 @@ CHEAT_DATA: list[Category] = [
         ],
     },
     {
-        "name": "👁   Visual Mode",
+        "name": "Visual Mode",
         "commands": [
             ("v", "Start visual mode — character-wise select", "basic"),
             ("V", "Start visual mode — line-wise select", "basic"),
@@ -263,7 +263,7 @@ CHEAT_DATA: list[Category] = [
         ],
     },
     {
-        "name": "📂  Windows & Tabs",
+        "name": "Windows & Tabs",
         "commands": [
             (":split | :sp", "Split window horizontally", "intermediate"),
             (":vsplit | :vsp", "Split window vertically", "intermediate"),
@@ -288,7 +288,7 @@ CHEAT_DATA: list[Category] = [
         ],
     },
     {
-        "name": "🏷   Marks & Registers",
+        "name": "Marks & Registers",
         "commands": [
             ("ma", "Mark current position with mark 'a'", "intermediate"),
             ("`a", "Jump to exact position of mark 'a'", "intermediate"),
@@ -311,7 +311,7 @@ CHEAT_DATA: list[Category] = [
         ],
     },
     {
-        "name": "⚡  Ex Commands",
+        "name": "Ex Commands",
         "commands": [
             (":w", "Write (save) file", "basic"),
             (":q", "Quit current window (fails if unsaved)", "basic"),
@@ -343,7 +343,7 @@ CHEAT_DATA: list[Category] = [
         ],
     },
     {
-        "name": "🔧  Insert Mode",
+        "name": "Insert Mode",
         "commands": [
             ("Esc | Ctrl-c | Ctrl-[", "Exit insert mode", "basic"),
             ("Ctrl-h", "Delete character before cursor (backspace)", "basic"),
@@ -367,7 +367,7 @@ CHEAT_DATA: list[Category] = [
         ],
     },
     {
-        "name": "🧠  Advanced & Tips",
+        "name": "Advanced & Tips",
         "commands": [
             ("g;", "Cycle backward through changelist", "advanced"),
             ("g,", "Cycle forward through changelist", "advanced"),
@@ -397,6 +397,19 @@ CHEAT_DATA: list[Category] = [
             ("[count]z.", "Center screen on line N", "advanced"),
         ],
     },
+]
+
+# Category indicator colors (used in sidebar)
+CATEGORY_TINTS = [
+    "#a6e3a1",  # Movement
+    "#f9e2af",  # Editing
+    "#89b4fa",  # Search & Replace
+    "#f38ba8",  # Visual Mode
+    "#94e2d5",  # Windows & Tabs
+    "#cba6f7",  # Marks & Registers
+    "#fab387",  # Ex Commands
+    "#a6e3a1",  # Insert Mode
+    "#f9e2af",  # Advanced & Tips
 ]
 
 
@@ -504,9 +517,12 @@ class SearchScreen(ModalScreen[None]):
 class CatListItem(ListItem):
     """A list item representing a category in the sidebar."""
 
-    def __init__(self, name: str, index: int) -> None:
+    def __init__(self, name: str, index: int, tint: str) -> None:
         self.cat_index = index
-        super().__init__(Label(Text(f"  {name}")))
+        text = Text()
+        text.append("  ")
+        text.append(name, style=f"bold {tint}")
+        super().__init__(Label(text))
 
 
 # ──────────────────────────────────────────────
@@ -575,7 +591,7 @@ class VimCheatApp(App):
         with Horizontal():
             with Vertical(id="sidebar"):
                 yield Static("  📚 CATEGORIES", id="sidebar-title")
-                items = [CatListItem(str(c["name"]), i) for i, c in enumerate(CHEAT_DATA)]
+                items = [CatListItem(str(c["name"]), i, CATEGORY_TINTS[i]) for i, c in enumerate(CHEAT_DATA)]
                 yield ListView(*items, id="category-list")
                 yield Static("  ? help  \\  / search  \\  t theme  \\  q quit", id="sidebar-footer")
 
@@ -637,8 +653,8 @@ class VimCheatApp(App):
             li.styles.background = t["sidebar_bg"]
             label = li.query_one(Label)
             if label:
-                label.styles.color = t["text_desc"]
                 label.styles.background = t["sidebar_bg"]
+                label.styles.color = ""  # let CatListItem's tint show through
         # Highlighted item — accent background for maximum contrast
         try:
             idx = lv.index
@@ -797,8 +813,8 @@ class VimCheatApp(App):
                 li.styles.background = t["sidebar_bg"]
                 label = li.query_one(Label)
                 if label:
-                    label.styles.color = t["text_desc"]
                     label.styles.background = t["sidebar_bg"]
+                    label.styles.color = ""  # let tint show through
             event.item.styles.background = t["accent"]
             hl_label = event.item.query_one(Label)
             if hl_label:
